@@ -1,4 +1,4 @@
-Pipeline de Geração e Validação de Estruturas de Proteínas
+# Pipeline de Geração e Validação de Estruturas de Proteínas
 
 Este documento descreve um fluxo de trabalho computacional para gerar novas estruturas de proteínas (backbones), projetar sequências de aminoácidos para essas estruturas e, em seguida, prever a estrutura 3D das sequências projetadas para validação.
 A pipeline utiliza três ferramentas principais:
@@ -13,7 +13,7 @@ Gerenciador de pacotes conda ou mamba.
 GPU compatível com CUDA (os comandos foram executados com cudatoolkit=11.3).
 Git para clonar os repositórios.
 
-
+*Atualização: Proteínas geradas por OmegaFold na pasta proteinmpnn_residues (vale notar que nem todas as proteínas geradas pelo ProteinMPNN foram validadas por motivos de tempo e por ser somente uma demonstração)*
 
 
 
