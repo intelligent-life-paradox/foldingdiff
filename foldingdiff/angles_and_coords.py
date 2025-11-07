@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 
 import biotite.structure as struc
+from biotite.structure import filter_amino_acids
 from biotite.structure.io.pdb import PDBFile
 from biotite.sequence import ProteinSequence
 
