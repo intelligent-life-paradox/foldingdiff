@@ -1,6 +1,6 @@
 import functools
 import time
-from typing import Any, Callable, Dict, Optional, Union, Literal
+from typing import Any, Dict
 import torch
 import pytorch_lightning as pl
 from transformers import get_linear_schedule_with_warmup
@@ -9,9 +9,6 @@ import logging
 
 from foldingdiff import losses
 from simple_impl.bert_for_diffusion_base import BertForDiffusionBase
-
-LR_SCHEDULE = Optional[Literal["OneCycleLR", "LinearWarmup"]]
-LOSS_KEYS = Literal["l1", "smooth_l1"]
 
 
 class BertForDiffusion(BertForDiffusionBase, pl.LightningModule):
@@ -153,7 +150,7 @@ class BertForDiffusion(BertForDiffusionBase, pl.LightningModule):
             lr=self.learning_rate,
             weight_decay=self.l2_lambda,
         )
-        retval = {"optimizer": optim}
+        retval: Dict[str, Any] = {"optimizer": optim}
 
         # https://huggingface.co/docs/transformers/v4.21.2/en/main_classes/optimizer_schedules#transformers.get_linear_schedule_with_warmup
         # Transformers typically do well with linear warmup

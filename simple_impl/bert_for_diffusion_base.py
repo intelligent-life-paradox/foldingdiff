@@ -14,11 +14,7 @@ from transformers import BertPreTrainedModel, BertConfig
 from transformers.models.bert.modeling_bert import BertEncoder
 import pytorch_lightning as pl
 
-from foldingdiff.modelling import (
-    BertEmbeddings,
-    AnglesPredictor,
-    GaussianFourierProjection,
-)
+from foldingdiff.modelling import GaussianFourierProjection
 
 
 class BertForDiffusionBase(BertPreTrainedModel):
@@ -55,10 +51,20 @@ class BertForDiffusionBase(BertPreTrainedModel):
         self.inputs_to_hidden_dim = nn.Linear(
             in_features=n_inputs, out_features=config.hidden_size
         )
-        self.embeddings = BertEmbeddings(config)
+        # BertEmbeddings(config) when position_embedding_type is not absolute
+        self.embeddings = nn.Sequential(
+            nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps),
+            nn.Dropout(config.hidden_dropout_prob),
+        )
         self.encoder = BertEncoder(config)
 
-        self.token_decoder = AnglesPredictor(config.hidden_size, n_inputs)
+        # AnglesPredictor(config.hidden_size, n_inputs)
+        self.token_decoder = nn.Sequential(
+            nn.Linear(config.hidden_size, config.hidden_size),
+            nn.GELU(),
+            nn.LayerNorm(config.hidden_size, eps=1e-12),
+            nn.Linear(config.hidden_size, n_inputs),
+        )
 
         self.time_embed = GaussianFourierProjection(config.hidden_size)
 
