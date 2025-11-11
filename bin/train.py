@@ -338,7 +338,7 @@ def train(
     """Main training loop"""
     # Record the args given to the function before we create more vars
     # https://stackoverflow.com/questions/10724495/getting-all-arguments-and-values-passed-to-a-function
-    func_args = locals()
+    func_args = {**locals()}
 
     results_folder = Path(results_dir)
     record_args_and_metadata(func_args, results_folder)

@@ -37,6 +37,7 @@ def canonical_distances_and_dihedrals(
     assert os.path.isfile(fname)
     warnings.filterwarnings("ignore", ".*elements were guessed from atom_.*")
     warnings.filterwarnings("ignore", ".*invalid value encountered in true_div.*")
+    warnings.filterwarnings("ignore", ".*invalid value encountered in divide.*")
     opener = gzip.open if fname.endswith(".gz") else open
     with opener(str(fname), "rt") as f:
         source = PDBFile.read(f)
