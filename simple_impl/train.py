@@ -62,11 +62,8 @@ cfg = BertConfig(
 
 model = BertForDiffusion(
     config=cfg,
-    time_encoding="gaussian_fourier",
-    decoder="mlp",
     ft_names=train_dataset.feature_names["angles"],
     lr=5e-05,
-    loss="smooth_l1",
     l2=0.0,
     l1=0.0,
     epochs=10000,

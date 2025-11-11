@@ -1,11 +1,14 @@
+import functools
 import time
 from typing import Any, Callable, Dict, Optional, Union, Literal
 import torch
 import pytorch_lightning as pl
 from transformers import get_linear_schedule_with_warmup
 
-from foldingdiff.modelling import BertForDiffusionBase
 import logging
+
+from foldingdiff import losses
+from simple_impl.bert_for_diffusion_base import BertForDiffusionBase
 
 LR_SCHEDULE = Optional[Literal["OneCycleLR", "LinearWarmup"]]
 LOSS_KEYS = Literal["l1", "smooth_l1"]
@@ -15,7 +18,6 @@ class BertForDiffusion(BertForDiffusionBase, pl.LightningModule):
     def __init__(
         self,
         lr: float = 5e-5,
-        loss: Union[Callable, LOSS_KEYS] = "smooth_l1",
         l2: float = 0.0,
         l1: float = 0.0,
         epochs: int = 1,
@@ -23,19 +25,13 @@ class BertForDiffusion(BertForDiffusionBase, pl.LightningModule):
         **kwargs,
     ):
         """Feed args to BertForDiffusionBase and then feed the rest into"""
-        BertForDiffusionBase.__init__(
-            self,
-            ft_is_angular=[True for _ in kwargs["ft_names"]],
-            **kwargs,
-        )
+        BertForDiffusionBase.__init__(self, **kwargs)
         # Store information about leraning rates and loss
         self.learning_rate = lr
-        # loss function is either a callable or a list of callables
-        logging.info(
-            f"Mapping loss {loss} to list of losses corresponding to angular {self.ft_is_angular}"
-        )
 
-        self.loss_func = self.angular_loss_fn_dict[loss]
+        self.loss_func = functools.partial(
+            losses.radian_smooth_l1_loss, beta=torch.pi / 10
+        )
 
         pl.utilities.rank_zero_info(f"Using loss: {self.loss_func}")
         if isinstance(self.loss_func, (tuple, list)):
